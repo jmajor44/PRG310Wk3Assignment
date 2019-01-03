@@ -1,0 +1,182 @@
+Start website
+
+  1) Please open Visual Studio
+  2) Please click on File > New > Project.
+  3) Once the new project window appears, click on Visual C# > Web > Previous Versions
+  4) Click on ASP.NET Empty Web Site and then for the name type in Wk1AssignmentFutureValue
+  5) For the location, Watch the class and put it where I showed you to put all your work files for this class.
+  6) Make sure .NET Framework 4.6.2 is selected.
+  7) Make sure the Create directory for solution is checked and the Add to Source Control is checked as this will connect it with 
+  GitHub addon that I showed you how to use during your week one class.
+  8) Add a web form as shown in class and name it Default.aspx.
+  9) Add a folder as shown in class and name it Images and add the IUlogo.jpg that you download with the student files chapter 1 
+  (I go over how to do this in class)
+  
+Use the Web Forms Designer to build the form
+
+  10) Open the Default.aspx web form and switch to Source View, (I went over the different views in class), Type "401K Future Value" in
+  the title element in the head section of the HTML.
+  11) Move the cursor to the end of the opening body tag and press the Enter key to create a new line. Next, drag the IU logo file from
+  the Images folder in the Solution Explorer to the new line. That should create an img element with a properly coded src attribute.
+  Now, add an alt attribute to this element with “Independence University Logo” as its value, and switch to Design view to see the
+  changes.
+  12) Switch to Source view, place the insertion point after the img element, and add an h1 element that has
+  “401K Future Value Calculator” as its content.
+  13) Switch to Design view to see this change. Then, run the form in the default browser by pressing F5 or by clicking the IIS Express
+  button at the top of the program. That automatically saves the changes to the Default.aspx file. After your form is displayed
+  in the default browser, close the browser. 
+  14) Return to Visual Studio. If the Toolbox isn’t available, that means the web form is still running. 
+  So, click the Stop Debugging button in the Debug toolbar to stop the application.
+  15) In Source view, place the cursor inside the div tags. Then, in Design view, use the techniques shown in class to add a table
+  that provides for six rows and two columns. Next, add the text shown in the first four rows to the first column of the table. 
+  Then, drag the right boundary of the first column to reduce its width as shown in this figure.
+  16) Switch to Source view to see the HTML for the table. Note that a style element has been added to the head section and class 
+  attributes have been added to the table element and some of the td elements. This was generated when you reduced the width of the 
+  first column by dragging its boundary. Note too that non-breaking space characters (&nbsp;) have been generated for the 
+  empty td elements.
+  17) Switch to Design view and use the techniques shown in class to add the drop-down list, text boxes, label, and buttons shown
+  in that figure to the table. Then, adjust the size of the list, text box, and buttons, but not the label, so the table looks the
+  way you want it to.
+  18) Use the techniques of figure 2-9 and the summary in figure 2-10 to set the ID and Text properties of the controls. 
+  For the Clear button, also set the CausesValidation property to False. For the label, delete the value of the Text property.
+  19) Press F5 to run the application, and check the web form to make sure it looks the way it’s supposed to. 
+  Then, switch to Visual Studio and click the Stop Debugging button in the Debug toolbar.
+
+Add Validation Controls
+
+  20) Type in the following code to add the validations for the form. This will go right under the closing element for the table.
+
+        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
+            ErrorMessage="Interest rate is required." 
+            ControlToValidate="txtInterestRate" Display="Dynamic" ForeColor="Red">
+        </asp:RequiredFieldValidator>&nbsp;
+        <asp:RangeValidator ID="RangeValidator1" runat="server" 
+            ControlToValidate="txtInterestRate" Display="Dynamic" 
+            ErrorMessage="Interest rate must range from 1 to 20." MaximumValue="20" 
+            MinimumValue="1" Type="Double" ForeColor="Red">
+        </asp:RangeValidator>
+        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" 
+            ControlToValidate="txtYears" Display="Dynamic" 
+            ErrorMessage="Number of years is required." ForeColor="Red">
+        </asp:RequiredFieldValidator>
+        <asp:RangeValidator ID="RangeValidator2" runat="server" 
+            ControlToValidate="txtYears" Display="Dynamic" 
+            ErrorMessage="Years must range from 1 to 45." MaximumValue="45" 
+            MinimumValue="1" Type="Integer" ForeColor="Red">
+        </asp:RangeValidator>
+
+  21) Press F5 to run the application. Then, test the field validators by leaving fields blank or entering invalid data. 
+  The validation will be done when the focus leaves a text box or when you click on the Calculate button.
+  22) Stop the application. Then, if necessary, fix any problems and test again. If, for example, validation is done when you clic
+  the Clear button, make sure its CausesValidation property is set to False. Or, if a range validator is behaving strangely, make sure
+  its Type property is set correctly.
+
+Add the C# code and test as you go
+
+  
+  23) Double-click outside of the body of the form in Design view to switch to the Code Editor. That will take you to the Load event 
+  handler that you started coding earlier.
+  24) At the top of the Code Editor, note the using directives that Visual Studio generates. Then, add the rest of the code for the 
+  Load event handler shown below, taking full advantage of the IntelliSense that’s provided. Then, press F5 to compile and test this 
+  event handler. If any syntax errors are detected, use the techniques shown in class to fix them.
+
+  protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+                for (int i = 50; i <= 500; i += 50)
+                    ddlMonthlyInvestment.Items.Add(i.ToString());
+        }
+
+        protected void btnCalculate_Click(object sender, EventArgs e)
+        {
+            if (IsValid)
+            {
+                int monthlyInvestment =
+                    Convert.ToInt32(ddlMonthlyInvestment.SelectedValue);
+                decimal yearlyInterestRate =
+                    Convert.ToDecimal(txtInterestRate.Text);
+                int years =
+                    Convert.ToInt32(txtYears.Text);
+
+                decimal futureValue = this.CalculateFutureValue(monthlyInvestment,
+                    yearlyInterestRate, years);
+
+                lblFutureValue.Text = futureValue.ToString("c");
+            }
+        }
+
+        protected decimal CalculateFutureValue(int monthlyInvestment,
+        decimal yearlyInterestRate, int years)
+        {
+            int months = years * 12;
+            decimal monthlyInterestRate = yearlyInterestRate / 12 / 100;
+            decimal futureValue = 0;
+
+            for (int i = 0; i < months; i++)
+            {
+                futureValue = (futureValue + monthlyInvestment)
+                    * (1 + monthlyInterestRate);
+            }
+            return futureValue;
+        }
+
+  25) In the aspx file, in Design view, double-click on the Clear button to start an event handler for the Click event of that button. 
+  Then, enter the code for this event handler as shown below, and test again.
+ 
+        protected void btnClear_Click(object sender, EventArgs e)
+        {
+            ddlMonthlyInvestment.SelectedIndex = 0;
+            txtInterestRate.Text = "";
+            txtYears.Text = "";
+            lblFutureValue.Text = "";
+        }
+
+  26) Enter the code for the CalculateFutureValue method that’s shown below. When you’re ready to add the for loop, right-click, 
+  select Visual C# from the shortcut menu, and select the for snippet. Then, finish the coding for this method.
+ 
+        protected decimal CalculateFutureValue(int monthlyInvestment,
+        decimal yearlyInterestRate, int years)
+        {
+            int months = years * 12;
+            decimal monthlyInterestRate = yearlyInterestRate / 12 / 100;
+            decimal futureValue = 0;
+
+            for (int i = 0; i < months; i++)
+            {
+                futureValue = (futureValue + monthlyInvestment)
+                    * (1 + monthlyInterestRate);
+            }
+            return futureValue;
+        }
+
+  27) In the aspx file, in Design view, double-click on the Calculate button to start an event handler for the Click event of that 
+  button. Then, enter the code below for this event handler. This method should call the CalculateFutureValue method as in 
+  instruction 26. Then, test this code.
+
+        protected void btnCalculate_Click(object sender, EventArgs e)
+        {
+            if (IsValid)
+            {
+                int monthlyInvestment =
+                    Convert.ToInt32(ddlMonthlyInvestment.SelectedValue);
+                decimal yearlyInterestRate =
+                    Convert.ToDecimal(txtInterestRate.Text);
+                int years =
+                    Convert.ToInt32(txtYears.Text);
+
+                decimal futureValue = this.CalculateFutureValue(monthlyInvestment,
+                    yearlyInterestRate, years);
+
+                lblFutureValue.Text = futureValue.ToString("c");
+            }
+        }
+
+  28) If necessary, fix any design or coding problems that remain. When you’re through, the application should work the way you want 
+  it to. If it doesn't work and you need further assistance, please don't hesitate to get in touch with either myself or a learning 
+  coach who hours are posted in the announcements of the class.
+
+  I hope you enjoy this programming project. If you have followed the instructions given in class and listed here, 
+  you should have a GitHub repository you can share with employers as you look for work once you graduated.
+ 
+
+
